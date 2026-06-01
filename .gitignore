@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+frontend/dist/
+.env
+*.egg-info/
+.vite/
+.DS_Store
+claude/
+CLAUDE.md
+.claude/
+*.tsbuildinfo

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>GroveMap</Name>
+  <Repository>grovemap</Repository>
+  <Registry/>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Overview>Web-based disk usage analyzer with interactive treemap visualization. Mount your shares to see what's using your storage.</Overview>
+  <Category>Tools:</Category>
+  <WebUI>http://[IP]:[PORT:8080]</WebUI>
+  <Icon/>
+  <ExtraParams/>
+  <PostArgs/>
+  <DonateText/>
+  <DonateLink/>
+  <DonateImg/>
+  <Description>GroveMap - Disk usage analyzer with interactive treemap, filtering by file name, extension, and date.</Description>
+  <Config Name="WebUI Port" Target="8080" Default="8080" Mode="tcp" Description="Port for the web interface" Type="Port" Display="always" Required="true" Mask="false">8080</Config>
+  <Config Name="Share 1" Target="/data/share1" Default="/mnt/user" Mode="ro" Description="First directory to analyze" Type="Path" Display="always" Required="true" Mask="false">/mnt/user</Config>
+  <Config Name="Share 2" Target="/data/share2" Default="" Mode="ro" Description="Second directory to analyze (optional)" Type="Path" Display="always" Required="false" Mask="false"/>
+  <Config Name="Share 3" Target="/data/share3" Default="" Mode="ro" Description="Third directory to analyze (optional)" Type="Path" Display="always" Required="false" Mask="false"/>
+  <Config Name="Cache TTL" Target="SCAN_CACHE_TTL" Default="300" Mode="" Description="Seconds to cache scan results" Type="Variable" Display="advanced" Required="false" Mask="false">300</Config>
+  <Config Name="Scan on Start" Target="SCAN_ON_START" Default="true" Mode="" Description="Auto-scan when container starts" Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+</Container>

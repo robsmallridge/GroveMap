@@ -1,0 +1,10 @@
+**/node_modules
+frontend/dist
+**/__pycache__
+*.pyc
+.git
+.gitignore
+*.md
+claude/**
+CLAUDE.md
+*.DS_Store

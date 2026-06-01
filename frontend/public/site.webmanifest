@@ -1,0 +1,26 @@
+{
+  "name": "GroveMap",
+  "short_name": "GroveMap",
+  "description": "Disk usage, mapped.",
+  "theme_color": "#2b2e2c",
+  "background_color": "#151c19",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: oklch(0.80 0.165 150);
+  --accent-ink: oklch(0.22 0.03 158);
+  --accent-glow: oklch(0.80 0.165 150 / 0.20);
+}
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  background: oklch(0.165 0.008 165);
+  color: oklch(0.975 0.004 165);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* native date picker on dark surfaces */
+input[type="date"] { color-scheme: dark; }
+
+@layer components {
+  /* ---- buttons ---- */
+  .btn { @apply inline-flex items-center gap-2 font-semibold text-sm rounded-[10px] px-4 py-2 border border-transparent transition; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.07); }
+  .btn-quiet { @apply bg-surface-2 text-ink-2 border-line; }
+  .btn-quiet:hover { @apply bg-surface-3 text-ink; }
+
+  /* ---- treemap svg text ---- */
+  .tm-folder-label { font: 600 12.5px "Plus Jakarta Sans", sans-serif; fill: oklch(0.975 0.004 165); }
+  .tm-folder-size  { font: 500 11px "JetBrains Mono", monospace; fill: oklch(0.80 0.008 165); }
+  .tm-cell-label   { font: 600 11.5px "Plus Jakarta Sans", sans-serif; fill: oklch(0.20 0.03 160); }
+  .tm-cell-size    { font: 500 10px "JetBrains Mono", monospace; fill: oklch(0.24 0.03 160 / 0.85); }
+}

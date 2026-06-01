@@ -1,0 +1,15 @@
+services:
+  grovemap:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount directories you want to analyze under /data/
+      - /path/to/your/files:/data/files:ro
+      # Add more mounts as needed:
+      # - /mnt/user/media:/data/media:ro
+      # - /mnt/user/documents:/data/documents:ro
+    environment:
+      - SCAN_CACHE_TTL=300
+      - SCAN_ON_START=true
+    restart: unless-stopped
