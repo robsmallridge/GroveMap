@@ -1,6 +1,14 @@
-# GroveMap
+<p align="center">
+  <img src="frontend/public/favicon.svg" width="64" height="64" alt="GroveMap icon" />
+</p>
 
-Disk usage analyzer with an interactive treemap web UI. Built for Unraid but runs anywhere Docker does.
+<h1 align="center">GroveMap</h1>
+
+<p align="center">Disk usage analyzer with an interactive treemap web UI.<br>Built for Unraid but runs anywhere Docker does.</p>
+
+<p align="center">
+  <img src="image.png" alt="GroveMap screenshot" width="800" />
+</p>
 
 Mount any directories into the container and GroveMap will scan them, cache the results, and present an interactive treemap you can drill into. Filter files by name, extension, or date to find what's eating your storage.
 

@@ -1,0 +1,9 @@
+<CommunityApplications>
+  <Profile>
+GroveMap is a web-based disk usage analyzer with an interactive treemap UI. Mount your Unraid shares and instantly see what's consuming your storage — drill down into folders, filter by file name, extension, or date. Lightweight, read-only, no database required.
+
+For support, open an issue on GitHub.
+  </Profile>
+  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/favicon.svg</Icon>
+  <WebPage>https://github.com/robsmallridge/GroveMap</WebPage>
+</CommunityApplications>

@@ -8,3 +8,9 @@ frontend/dist
 claude/**
 CLAUDE.md
 *.DS_Store
+image.png
+LICENSE
+ca_profile.xml
+templates/
+.github/
+unraid-template.xml
