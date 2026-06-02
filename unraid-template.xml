@@ -10,7 +10,7 @@
   <Overview>Web-based disk usage analyzer with interactive treemap visualization. Mount your shares to see what's using your storage.</Overview>
   <Category>Tools:</Category>
   <WebUI>http://[IP]:[PORT:8080]</WebUI>
-  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/favicon.svg</Icon>
+  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/icon-192.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <DonateText/>

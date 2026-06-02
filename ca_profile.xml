@@ -4,6 +4,6 @@ GroveMap is a web-based disk usage analyzer with an interactive treemap UI. Moun
 
 For support, open an issue on GitHub.
   </Profile>
-  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/favicon.svg</Icon>
+  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/icon-192.png</Icon>
   <WebPage>https://github.com/robsmallridge/GroveMap</WebPage>
 </CommunityApplications>

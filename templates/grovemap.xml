@@ -12,7 +12,7 @@
   <Project>https://github.com/robsmallridge/GroveMap</Project>
   <ReadMe>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/README.md</ReadMe>
   <TemplateURL>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/templates/grovemap.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/favicon.svg</Icon>
+  <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/icon-192.png</Icon>
   <Screenshot>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/image.png</Screenshot>
   <Category>Tools:Utilities</Category>
   <License>MIT</License>
