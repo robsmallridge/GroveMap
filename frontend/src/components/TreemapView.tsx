@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useTree, useFiles, useTriggerScan } from "../api/client";
 import type { TreeNode, Filters } from "../types";
 import Treemap from "./Treemap";
+import TreeListView from "./TreeListView";
+import ViewToggle, { type ViewMode } from "./ViewToggle";
 import Breadcrumb from "./Breadcrumb";
 import FilterPanel from "./FilterPanel";
 import ScanStatus from "./ScanStatus";
@@ -15,6 +17,7 @@ interface Props {
 export default function TreemapView({ rootPath }: Props) {
   const [drillPath, setDrillPath] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({ name: "", extension: "", minDate: "", maxDate: "" });
+  const [viewMode, setViewMode] = useState<ViewMode>("treemap");
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 560 });
 
@@ -53,16 +56,21 @@ export default function TreemapView({ rootPath }: Props) {
   const pathNames = drillPath.map((p) => p.split("/").pop() || p);
   const scanning = treeData?.state === "scanning";
 
+  const isTreemap = viewMode === "treemap";
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_256px] gap-[22px] items-start">
+    <div className={"grid grid-cols-1 gap-[22px] items-start " + (isTreemap ? "lg:grid-cols-[1fr_256px]" : "")}>
       <div className="min-w-0" ref={containerRef}>
         <div className="flex items-center justify-between gap-4 mb-4">
           <Breadcrumb path={pathNames} rootPath={rootPath} onNavigate={handleBreadcrumbNav} />
-          <ScanStatus
-            state={scanning ? "scanning" : "ready"}
-            filesScanned={treeData?.files_scanned ?? 0}
-            onRescan={() => scanMutation.mutate(rootPath)}
-          />
+          <div className="flex items-center gap-2.5">
+            <ViewToggle mode={viewMode} onChange={setViewMode} />
+            <ScanStatus
+              state={scanning ? "scanning" : "ready"}
+              filesScanned={treeData?.files_scanned ?? 0}
+              onRescan={() => scanMutation.mutate(rootPath)}
+            />
+          </div>
         </div>
 
         {treeData?.tree && (
@@ -74,14 +82,18 @@ export default function TreemapView({ rootPath }: Props) {
               <Stat label="Items here" value={(treeData.tree.children?.length ?? 0).toString()} />
             </div>
 
-            <div className="relative bg-surface border border-line rounded-xl overflow-hidden p-1.5">
-              <Treemap
-                data={treeData.tree}
-                width={dimensions.width - 12}
-                height={dimensions.height}
-                onDrillDown={handleDrillDown}
-              />
-            </div>
+            {isTreemap ? (
+              <div className="relative bg-surface border border-line rounded-xl overflow-hidden p-1.5">
+                <Treemap
+                  data={treeData.tree}
+                  width={dimensions.width - 12}
+                  height={dimensions.height}
+                  onDrillDown={handleDrillDown}
+                />
+              </div>
+            ) : (
+              <TreeListView rootPath={rootPath} tree={treeData.tree} onDrillDown={handleDrillDown} />
+            )}
           </>
         )}
 
@@ -108,7 +120,9 @@ export default function TreemapView({ rootPath }: Props) {
         )}
       </div>
 
-      <FilterPanel filters={filters} onChange={setFilters} extensions={treeData?.extensions ?? {}} />
+      {isTreemap && (
+        <FilterPanel filters={filters} onChange={setFilters} extensions={treeData?.extensions ?? {}} />
+      )}
     </div>
   );
 }
