@@ -1,4 +1,5 @@
 **/node_modules
+**/.venv
 frontend/dist
 **/__pycache__
 *.pyc
@@ -8,7 +9,7 @@ frontend/dist
 claude/**
 CLAUDE.md
 *.DS_Store
-image.png
+screenshot-*.png
 LICENSE
 ca_profile.xml
 templates/

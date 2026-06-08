@@ -7,7 +7,8 @@
 <p align="center">Disk usage analyzer with an interactive treemap web UI.<br>Built for Unraid but runs anywhere Docker does.</p>
 
 <p align="center">
-  <img src="image.png" alt="GroveMap screenshot" width="800" />
+  <img src="screenshot-treemap.png" alt="GroveMap treemap view" width="49%" />
+  <img src="screenshot-tree.png" alt="GroveMap tree list view" width="49%" />
 </p>
 
 Mount any directories into the container and GroveMap will scan them, cache the results, and present an interactive treemap you can drill into. Filter files by name, extension, or date to find what's eating your storage.
@@ -24,6 +25,7 @@ Open `http://your-server:8080`.
 ## Features
 
 - **Interactive treemap** - proportional visualization of disk usage, click to drill down
+- **Tree list view** - sortable hierarchical breakdown with size bars and modified dates; toggle between treemap and tree from the header
 - **Multiple volumes** - mount as many directories as you need under `/data/`
 - **Filtering** - search by file name, extension, or modification date range
 - **Background scanning** - UI stays responsive while scans run
@@ -112,8 +114,10 @@ grovemap/
         ├── utils.ts        # formatSize, formatDate, color palette
         └── components/
             ├── RootSelector.tsx   # Volume cards with scan status
-            ├── TreemapView.tsx    # Main view: treemap + filters + file list
+            ├── TreemapView.tsx    # Main view: shared header + view toggle
             ├── Treemap.tsx        # d3-hierarchy SVG treemap
+            ├── TreeListView.tsx   # Sortable hierarchical list with size bars
+            ├── ViewToggle.tsx     # Treemap / Tree segmented control
             ├── Breadcrumb.tsx     # Drill-down navigation
             ├── FilterPanel.tsx    # Name/extension/date filters
             ├── FileList.tsx       # Filtered file results table

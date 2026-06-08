@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { RootInfo, TreeResponse, FilesResponse, Filters } from "../types";
+import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
+import type { RootInfo, TreeResponse, FilesResponse, Filters, TreeNode } from "../types";
 
 const BASE = "/api";
 
@@ -7,6 +7,23 @@ async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
+}
+
+export function fetchSubtree(
+  qc: QueryClient,
+  root: string,
+  path: string,
+  depth = 3
+): Promise<TreeNode | undefined> {
+  return qc
+    .fetchQuery<TreeResponse>({
+      queryKey: ["tree", root, path, depth],
+      queryFn: () => {
+        const params = new URLSearchParams({ root, path, depth: String(depth), dirs_only: "false" });
+        return fetchJson<TreeResponse>(`${BASE}/tree?${params}`);
+      },
+    })
+    .then((res) => res.tree);
 }
 
 export function useRoots() {
