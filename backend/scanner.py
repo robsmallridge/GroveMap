@@ -3,7 +3,6 @@
 import os
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
 
 
 @dataclass
@@ -144,11 +143,12 @@ def get_subtree(tree: TreeNode, path: str) -> TreeNode | None:
     if tree.path == path:
         return tree
     for child in tree.children:
-        if child.is_dir:
-            if path.startswith(child.path):
-                result = get_subtree(child, path)
-                if result:
-                    return result
+        # Match on a path-separator boundary so that a request for
+        # "/data/app-backup" does not descend into a sibling "/data/app".
+        if child.is_dir and (path == child.path or path.startswith(child.path + os.sep)):
+            result = get_subtree(child, path)
+            if result:
+                return result
     return None
 
 

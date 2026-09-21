@@ -13,7 +13,8 @@
   <ReadMe>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/README.md</ReadMe>
   <TemplateURL>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/templates/grovemap.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/frontend/public/icon-192.png</Icon>
-  <Screenshot>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/image.png</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/screenshot-treemap.png</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/robsmallridge/GroveMap/main/screenshot-tree.png</Screenshot>
   <Category>Tools:Utilities</Category>
   <License>MIT</License>
   <Beta>true</Beta>
@@ -21,6 +22,6 @@
   <Config Name="Share 1" Target="/data/share1" Default="/mnt/user" Mode="ro" Description="First directory to analyze" Type="Path" Display="always" Required="true" Mask="false">/mnt/user</Config>
   <Config Name="Share 2" Target="/data/share2" Default="" Mode="ro" Description="Second directory to analyze (optional)" Type="Path" Display="always" Required="false" Mask="false"/>
   <Config Name="Share 3" Target="/data/share3" Default="" Mode="ro" Description="Third directory to analyze (optional)" Type="Path" Display="always" Required="false" Mask="false"/>
-  <Config Name="Cache TTL" Target="SCAN_CACHE_TTL" Default="300" Mode="" Description="Seconds to cache scan results" Type="Variable" Display="advanced" Required="false" Mask="false">300</Config>
-  <Config Name="Scan on Start" Target="SCAN_ON_START" Default="true" Mode="" Description="Auto-scan when container starts" Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Cache TTL" Target="SCAN_CACHE_TTL" Default="300" Mode="" Description="Seconds to cache scan results before a background refresh" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Scan on Start" Target="SCAN_ON_START" Default="true" Mode="" Description="Auto-scan when container starts" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 </Container>

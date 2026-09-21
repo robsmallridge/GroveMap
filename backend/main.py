@@ -2,7 +2,6 @@
 
 import os
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -11,9 +10,28 @@ from fastapi.staticfiles import StaticFiles
 from cache import ScanCache, ScanState
 from scanner import filter_files, get_subtree
 
+def _int_env(name: str, default: int) -> int:
+    """Read an int env var, falling back to the default if unset/empty/invalid.
+
+    Unraid's template editor can hand us an empty string for an untouched
+    Variable, so we must not let int("") crash startup (issue #4).
+    """
+    try:
+        return int((os.environ.get(name) or "").strip() or default)
+    except (ValueError, TypeError):
+        return default
+
+
+def _bool_env(name: str, default: bool) -> bool:
+    raw = (os.environ.get(name) or "").strip().lower()
+    if not raw:
+        return default
+    return raw in ("true", "1", "yes", "on")
+
+
 DATA_ROOT = os.environ.get("DATA_ROOT", "/data")
-SCAN_CACHE_TTL = int(os.environ.get("SCAN_CACHE_TTL", "300"))
-SCAN_ON_START = os.environ.get("SCAN_ON_START", "true").lower() == "true"
+SCAN_CACHE_TTL = _int_env("SCAN_CACHE_TTL", 300)
+SCAN_ON_START = _bool_env("SCAN_ON_START", True)
 STATIC_DIR = os.environ.get("STATIC_DIR", "/app/static")
 
 cache = ScanCache(ttl=SCAN_CACHE_TTL)
@@ -88,9 +106,17 @@ async def get_tree(
     if entry is None or entry.result is None:
         if entry and entry.state == ScanState.SCANNING:
             return {"state": "scanning", "files_scanned": entry.files_scanned}
-        # Trigger a scan
+        # Nothing usable cached yet — trigger the first scan.
         cache.scan_async(root)
         return {"state": "scanning", "files_scanned": 0}
+
+    # We have usable data. If it has gone stale, refresh it in the background but
+    # keep serving the existing tree so that navigating folders never blanks the
+    # UI or forces the user to wait for a full rescan (issue #3).
+    refreshing = entry.state == ScanState.SCANNING
+    if cache.is_stale(root) and not refreshing:
+        cache.scan_async(root)
+        refreshing = True
 
     tree = entry.result.tree
     if path:
@@ -108,6 +134,7 @@ async def get_tree(
         "state": "ready",
         "tree": tree_dict,
         "extensions": entry.result.extensions,
+        "refreshing": refreshing,
     }
 
 
@@ -150,9 +177,11 @@ async def get_files(
         max_size=max_size,
     )
 
-    # Sort
+    # Sort into a fresh list. filter_files may return the cached file list
+    # unchanged (when no filters are given), so sorting in place would mutate
+    # the shared scan result and race with concurrent requests.
     sort_key = {"size": lambda f: f.size, "name": lambda f: f.name.lower(), "modified": lambda f: f.modified}
-    filtered.sort(key=sort_key.get(sort_by, sort_key["size"]), reverse=sort_desc)
+    filtered = sorted(filtered, key=sort_key.get(sort_by, sort_key["size"]), reverse=sort_desc)
 
     total = len(filtered)
     page = filtered[offset : offset + limit]
@@ -191,7 +220,13 @@ async def serve_spa(full_path: str):
     index = os.path.join(STATIC_DIR, "index.html")
     if not os.path.isfile(index):
         return {"error": "Frontend not built. Run 'npm run build' in frontend/"}
-    file_path = os.path.join(STATIC_DIR, full_path)
-    if full_path and os.path.isfile(file_path):
-        return FileResponse(file_path)
+    if full_path:
+        # Resolve and confirm the target stays within STATIC_DIR before serving,
+        # otherwise a request like `/../../etc/passwd` (or its URL-encoded form)
+        # would escape the static root and read arbitrary container files.
+        static_root = os.path.realpath(STATIC_DIR)
+        candidate = os.path.realpath(os.path.join(STATIC_DIR, full_path))
+        within_root = candidate == static_root or candidate.startswith(static_root + os.sep)
+        if within_root and os.path.isfile(candidate):
+            return FileResponse(candidate)
     return FileResponse(index)
