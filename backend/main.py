@@ -2,7 +2,6 @@
 
 import os
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -178,9 +177,11 @@ async def get_files(
         max_size=max_size,
     )
 
-    # Sort
+    # Sort into a fresh list. filter_files may return the cached file list
+    # unchanged (when no filters are given), so sorting in place would mutate
+    # the shared scan result and race with concurrent requests.
     sort_key = {"size": lambda f: f.size, "name": lambda f: f.name.lower(), "modified": lambda f: f.modified}
-    filtered.sort(key=sort_key.get(sort_by, sort_key["size"]), reverse=sort_desc)
+    filtered = sorted(filtered, key=sort_key.get(sort_by, sort_key["size"]), reverse=sort_desc)
 
     total = len(filtered)
     page = filtered[offset : offset + limit]
@@ -219,7 +220,13 @@ async def serve_spa(full_path: str):
     index = os.path.join(STATIC_DIR, "index.html")
     if not os.path.isfile(index):
         return {"error": "Frontend not built. Run 'npm run build' in frontend/"}
-    file_path = os.path.join(STATIC_DIR, full_path)
-    if full_path and os.path.isfile(file_path):
-        return FileResponse(file_path)
+    if full_path:
+        # Resolve and confirm the target stays within STATIC_DIR before serving,
+        # otherwise a request like `/../../etc/passwd` (or its URL-encoded form)
+        # would escape the static root and read arbitrary container files.
+        static_root = os.path.realpath(STATIC_DIR)
+        candidate = os.path.realpath(os.path.join(STATIC_DIR, full_path))
+        within_root = candidate == static_root or candidate.startswith(static_root + os.sep)
+        if within_root and os.path.isfile(candidate):
+            return FileResponse(candidate)
     return FileResponse(index)
