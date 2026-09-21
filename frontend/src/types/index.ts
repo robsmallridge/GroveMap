@@ -27,6 +27,8 @@ export interface TreeResponse {
   tree?: TreeNode;
   extensions?: Record<string, number>;
   files_scanned?: number;
+  // True when serving cached data while a background refresh is in flight.
+  refreshing?: boolean;
 }
 
 export interface FileInfo {

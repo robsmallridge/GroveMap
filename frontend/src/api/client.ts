@@ -47,7 +47,9 @@ export function useTree(root: string | null, path?: string, depth = 3) {
     enabled: !!root,
     refetchInterval: (query) => {
       const data = query.state.data;
-      return data?.state === "scanning" ? 2000 : false;
+      // Poll during an initial scan and while a background refresh is running,
+      // so refreshed sizes appear without the user having to act.
+      return data?.state === "scanning" || data?.refreshing ? 2000 : false;
     },
   });
 }

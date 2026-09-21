@@ -11,9 +11,28 @@ from fastapi.staticfiles import StaticFiles
 from cache import ScanCache, ScanState
 from scanner import filter_files, get_subtree
 
+def _int_env(name: str, default: int) -> int:
+    """Read an int env var, falling back to the default if unset/empty/invalid.
+
+    Unraid's template editor can hand us an empty string for an untouched
+    Variable, so we must not let int("") crash startup (issue #4).
+    """
+    try:
+        return int((os.environ.get(name) or "").strip() or default)
+    except (ValueError, TypeError):
+        return default
+
+
+def _bool_env(name: str, default: bool) -> bool:
+    raw = (os.environ.get(name) or "").strip().lower()
+    if not raw:
+        return default
+    return raw in ("true", "1", "yes", "on")
+
+
 DATA_ROOT = os.environ.get("DATA_ROOT", "/data")
-SCAN_CACHE_TTL = int(os.environ.get("SCAN_CACHE_TTL", "300"))
-SCAN_ON_START = os.environ.get("SCAN_ON_START", "true").lower() == "true"
+SCAN_CACHE_TTL = _int_env("SCAN_CACHE_TTL", 300)
+SCAN_ON_START = _bool_env("SCAN_ON_START", True)
 STATIC_DIR = os.environ.get("STATIC_DIR", "/app/static")
 
 cache = ScanCache(ttl=SCAN_CACHE_TTL)
@@ -88,9 +107,17 @@ async def get_tree(
     if entry is None or entry.result is None:
         if entry and entry.state == ScanState.SCANNING:
             return {"state": "scanning", "files_scanned": entry.files_scanned}
-        # Trigger a scan
+        # Nothing usable cached yet — trigger the first scan.
         cache.scan_async(root)
         return {"state": "scanning", "files_scanned": 0}
+
+    # We have usable data. If it has gone stale, refresh it in the background but
+    # keep serving the existing tree so that navigating folders never blanks the
+    # UI or forces the user to wait for a full rescan (issue #3).
+    refreshing = entry.state == ScanState.SCANNING
+    if cache.is_stale(root) and not refreshing:
+        cache.scan_async(root)
+        refreshing = True
 
     tree = entry.result.tree
     if path:
@@ -108,6 +135,7 @@ async def get_tree(
         "state": "ready",
         "tree": tree_dict,
         "extensions": entry.result.extensions,
+        "refreshing": refreshing,
     }
 
 
