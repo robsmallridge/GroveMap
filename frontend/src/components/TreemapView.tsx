@@ -17,7 +17,7 @@ interface Props {
 export default function TreemapView({ rootPath }: Props) {
   const [drillPath, setDrillPath] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({ name: "", extension: "", minDate: "", maxDate: "" });
-  const [viewMode, setViewMode] = useState<ViewMode>("treemap");
+  const [viewMode, setViewMode] = useState<ViewMode>("tree");
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 560 });
 

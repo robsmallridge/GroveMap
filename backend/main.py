@@ -29,12 +29,14 @@ def _bool_env(name: str, default: bool) -> bool:
     return raw in ("true", "1", "yes", "on")
 
 
-DATA_ROOT = os.environ.get("DATA_ROOT", "/data")
-SCAN_CACHE_TTL = _int_env("SCAN_CACHE_TTL", 300)
-SCAN_ON_START = _bool_env("SCAN_ON_START", True)
-STATIC_DIR = os.environ.get("STATIC_DIR", "/app/static")
+DATA_ROOT        = os.environ.get("DATA_ROOT", "/data")
+SCAN_CACHE_TTL   = _int_env("SCAN_CACHE_TTL", 300)
+SCAN_ON_START    = _bool_env("SCAN_ON_START", True)
+SCAN_SKIP_MOUNTS = _bool_env("SCAN_SKIP_MOUNTS", False)
+SCAN_EXCLUDE     = [p.strip() for p in (os.environ.get("SCAN_EXCLUDE") or "").split(",") if p.strip()]
+STATIC_DIR       = os.environ.get("STATIC_DIR", "/app/static")
 
-cache = ScanCache(ttl=SCAN_CACHE_TTL)
+cache = ScanCache(ttl=SCAN_CACHE_TTL, exclude=SCAN_EXCLUDE, skip_mounts=SCAN_SKIP_MOUNTS)
 
 
 def _discover_roots() -> list[dict]:

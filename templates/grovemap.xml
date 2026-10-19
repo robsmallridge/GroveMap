@@ -24,4 +24,6 @@
   <Config Name="Share 3" Target="/data/share3" Default="" Mode="ro" Description="Third directory to analyze (optional)" Type="Path" Display="always" Required="false" Mask="false"/>
   <Config Name="Cache TTL" Target="SCAN_CACHE_TTL" Default="300" Mode="" Description="Seconds to cache scan results before a background refresh" Type="Variable" Display="advanced" Required="false" Mask="false"/>
   <Config Name="Scan on Start" Target="SCAN_ON_START" Default="true" Mode="" Description="Auto-scan when container starts" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Skip Mounts" Target="SCAN_SKIP_MOUNTS" Default="false" Mode="" Description="Do not descend into other filesystems (nested mounts, /proc, /sys)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Exclude" Target="SCAN_EXCLUDE" Default="" Mode="" Description="Comma-separated exclude patterns (full container paths or names, wildcards allowed)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 </Container>

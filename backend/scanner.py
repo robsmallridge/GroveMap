@@ -1,5 +1,6 @@
 """Directory tree scanner using os.scandir for efficient file system traversal."""
 
+import fnmatch
 import os
 import time
 from dataclasses import dataclass, field
@@ -65,12 +66,32 @@ class ScanResult:
     total_dirs: int
     extensions: dict[str, int]  # extension -> count
 
+def _is_excluded(path: str, name: str, patterns: list[str]) -> bool:
+    """Patterns containing '/' match the full path; others match the entry name."""
+    for pat in patterns:
+        if "/" in pat:
+            if fnmatch.fnmatch(path, pat.rstrip("/")):
+                return True
+        elif fnmatch.fnmatch(name, pat):
+            return True
+    return False
 
-def scan_directory(root_path: str, progress_callback=None) -> ScanResult:
+def scan_directory(
+        root_path: str,
+        progress_callback=None,
+        exclude: list[str] | None = None,
+        skip_mounts: bool = False,
+    ) -> ScanResult:
     """Scan a directory tree and return the full tree structure plus flat file list."""
     all_files: list[FileInfo] = []
     extensions: dict[str, int] = {}
     start_time = time.time()
+    exclude = exclude or []
+
+    try:
+        root_dev = os.stat(root_path).st_dev
+    except OSError:
+        root_dev = None
 
     def _scan(path: str) -> TreeNode:
         node = TreeNode(name=os.path.basename(path) or path, path=path)
@@ -83,7 +104,12 @@ def scan_directory(root_path: str, progress_callback=None) -> ScanResult:
 
         for entry in entries:
             try:
+                if exclude and _is_excluded(entry.path, entry.name, exclude):
+                    continue
                 if entry.is_dir(follow_symlinks=False):
+                    if skip_mounts and root_dev is not None:
+                        if entry.stat(follow_symlinks=False).st_dev != root_dev:
+                            continue  # different filesystem: proc, sysfs, nested mounts
                     child = _scan(entry.path)
                     node.children.append(child)
                     node.size += child.size

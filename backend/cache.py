@@ -25,8 +25,10 @@ class CacheEntry:
 
 
 class ScanCache:
-    def __init__(self, ttl: int = 300):
+    def __init__(self, ttl: int = 300, exclude: list[str] | None = None, skip_mounts: bool = False):
         self.ttl = ttl
+        self.exclude = exclude or []
+        self.skip_mounts = skip_mounts
         self._cache: dict[str, CacheEntry] = {}
         self._lock = threading.Lock()
 
@@ -85,7 +87,12 @@ class ScanCache:
                     entry.files_scanned = count
 
         try:
-            result = scan_directory(root, progress_callback=progress)
+            result = scan_directory(
+                root,
+                progress_callback=progress,
+                exclude=self.exclude,
+                skip_mounts=self.skip_mounts,
+            )
             with self._lock:
                 self._cache[root] = CacheEntry(
                     result=result,

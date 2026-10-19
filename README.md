@@ -38,6 +38,8 @@ Open `http://your-server:8080`.
 |---------------------|---------|-------------|
 | `SCAN_CACHE_TTL` | `300` | Seconds a scan result is served before it is considered stale. Once stale, the next request keeps returning the existing tree while a fresh scan runs in the background (the UI never blanks). |
 | `SCAN_ON_START` | `true` | Automatically scan all roots when the container starts |
+| `SCAN_SKIP_MOUNTS` | `false` | Don't descend into directories on a different filesystem than the scan root (skips nested mounts such as `/proc`, `/sys`, container rootfs). |
+| `SCAN_EXCLUDE` | _(empty)_ | Comma-separated exclude patterns. Entries containing `/` are matched against the full container path, others against the file or folder name. Wildcards (`*`, `?`) are supported, e.g. `/data/host-var/lib/docker,node_modules,*.tmp`. |
 | `DATA_ROOT` | `/data` | Base path where mounted volumes are discovered |
 | `STATIC_DIR` | `/app/static` | Directory the built frontend is served from |
 

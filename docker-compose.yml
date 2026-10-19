@@ -12,4 +12,6 @@ services:
     environment:
       - SCAN_CACHE_TTL=300
       - SCAN_ON_START=true
+      - SCAN_SKIP_MOUNTS=false
+      - SCAN_EXCLUDE=
     restart: unless-stopped
